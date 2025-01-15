@@ -28,6 +28,15 @@ server.on('upgrade', (request, socket, head) => {
     }
 });
 
+// Function to broadcast messages to connected clients
+function broadcastMessage(clients, message) {
+    clients.forEach((client) => {
+        if(client.readyState === WebSocket.OPEN) {
+            client.send(message);
+        }
+    });
+}
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
