@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+            flex-direction: column;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #messages {
+            border: 1px solid #ccc;
+            height: 400px;
+            overflow-y: scroll;
+            padding: 10px;
+            background-color: #fafafa;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message-name {
+            background-color: #f0f0f0;
+            padding: 5px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        .message-text {
+            padding: 10px;
+            background-color: #e9e9e9;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .input-container {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ccc;
+            background-color: #fff;
+        }
+
+        #name, #message {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        #name {
+            width: 30%;
+        }
+
+        #send {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 20%;
+        }
+
+        #send:hover {
+            background-color: #0056b3;
+        }
+
+        .input-container input, .input-container button {
+            margin: 5px;
+        }
+
+        .input-container button:disabled {
+            background-color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <div id="messages"></div>
+        <div class="input-container">
+            <input id="name" placeholder="Enter your name" />
+            <input id="message" placeholder="Type a message..." />
+            <button id="send" disabled>Send</button>
+        </div>
+    </div>
+
+    <script>
+        const ws = new WebSocket('ws://' + window.location.host + '/chat');
+        const messagesDiv = document.getElementById('messages');
+        const messageInput = document.getElementById('message');
+        const sendButton = document.getElementById('send');
+        const nameInput = document.getElementById('name');
+
+        // Enable send button when both name and message are provided
+        function toggleSendButton() {
+            const message = messageInput.value.trim();
+            const name = nameInput.value.trim();
+            sendButton.disabled = !(message && name);
+        }
+
+        ws.onmessage = (event) => {
+            try {
+                // Parse the incoming message as JSON
+                const data = JSON.parse(event.data);
+
+                // Extract the name and message from the JSON body
+                const messageName = data.name;
+                const messageText = data.message;
+
+                if (messageName && messageText) {
+                    // Create the message container
+                    const messageContainer = document.createElement('div');
+                    messageContainer.classList.add('message-container');
+
+                    // Create and append the name section
+                    const nameElement = document.createElement('div');
+                    nameElement.classList.add('message-name');
+                    nameElement.textContent = messageName;
+
+                    // Create and append the message text section
+                    const messageElement = document.createElement('div');
+                    messageElement.classList.add('message-text');
+                    messageElement.textContent = messageText;
+
+                    // Append name and message to the container
+                    messageContainer.appendChild(nameElement);
+                    messageContainer.appendChild(messageElement);
+
+                    // Append the whole message container to the messages div
+                    messagesDiv.appendChild(messageContainer);
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to bottom
+                }
+            } catch (error) {
+                console.error('Error parsing WebSocket message:', error);
+            }
+        };
+
+        sendButton.onclick = () => {
+            const message = messageInput.value;
+            const name = nameInput.value;
+
+            if (message && name) { // Ensure both name and message are provided
+                const messageData = { name: name, message: message };
+                ws.send(JSON.stringify(messageData)); // Send the name and message as a JSON object
+                messageInput.value = ''; // Clear the message input
+                toggleSendButton(); // Disable button after sending
+            }
+        };
+
+        messageInput.addEventListener('input', toggleSendButton);
+        nameInput.addEventListener('input', toggleSendButton);
+
+        messageInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                sendButton.click();
+            }
+        });
+
+    </script>
+
+</body>
+</html>
