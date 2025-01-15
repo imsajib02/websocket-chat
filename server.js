@@ -61,6 +61,23 @@ function broadcastMessage(clients, message) {
     });
 }
 
+// API endpoint for sending chat messages
+app.post('/api/send-message', (req, res) => {
+
+    const { name, message } = req.body;
+
+    if(!name) {
+        return res.status(400).json({ error: 'Name is required!' });
+    }
+
+    if(!message) {
+        return res.status(400).json({ error: 'Message is required!' });
+    }
+
+    broadcastMessage(chatClients, message);
+    return res.status(200).json({ status: 'success', message: 'Message sent successfully!' });
+});
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
