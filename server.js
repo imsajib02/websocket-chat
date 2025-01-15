@@ -13,6 +13,9 @@ const server = http.createServer(app);
 // Create WebSocket servers for chatting
 const chatWss = new WebSocket.Server({ noServer: true });
 
+// Store connected clients
+const chatClients = [];
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
