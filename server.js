@@ -77,7 +77,7 @@ app.post('/api/send-message', (req, res) => {
         return res.status(400).json({ error: 'Message is required!' });
     }
 
-    broadcastMessage(chatClients, message);
+    broadcastMessage(chatClients, JSON.stringify(req.body));
     return res.status(200).json({ status: 'success', message: 'Message sent successfully!' });
 });
 
