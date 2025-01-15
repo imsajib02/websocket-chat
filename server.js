@@ -16,6 +16,18 @@ const chatWss = new WebSocket.Server({ noServer: true });
 // Store connected clients
 const chatClients = [];
 
+// Function to handle WebSocket upgrades
+server.on('upgrade', (request, socket, head) => {
+
+    if(request.url === '/chat') {
+        chatWss.handleUpgrade(request, socket, head, (ws) => {
+            chatWss.emit('connection', ws, request);
+        });
+    } else {
+        socket.destroy();
+    }
+});
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
