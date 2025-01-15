@@ -54,9 +54,12 @@ chatWss.on('connection', (ws) => {
 
 // Function to broadcast messages to connected clients
 function broadcastMessage(clients, message) {
+
+    const messageData = JSON.stringify({ message: message });
+
     clients.forEach((client) => {
         if(client.readyState === WebSocket.OPEN) {
-            client.send(message);
+            client.send(messageData);
         }
     });
 }
