@@ -36,8 +36,8 @@ chatWss.on('connection', (ws) => {
     console.log('New client connected!');
 
     ws.on('message', (message) => {
-        console.log('Chat message received: ', message);
-        broadcastMessage(chatClients, message);
+        console.log('Chat message received: ', message.toString());
+        broadcastMessage(chatClients, message.toString());
     });
 
     ws.on('close', () => {
