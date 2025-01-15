@@ -28,6 +28,30 @@ server.on('upgrade', (request, socket, head) => {
     }
 });
 
+// WebSocket connection handling for chatting
+chatWss.on('connection', (ws) => {
+
+    // Store websocket stream
+    chatClients.push(ws);
+    console.log('New client connected!');
+
+    ws.on('message', (message) => {
+        console.log('Chat message received: ', message);
+        broadcastMessage(chatClients, message);
+    });
+
+    ws.on('close', () => {
+
+        // Remove client on disconnect
+        const index = chatClients.indexOf(ws);
+
+        if(index !== -1) {
+            chatClients.splice(index, 1);
+            console.log('Client disconnected!');
+        }
+    });
+});
+
 // Function to broadcast messages to connected clients
 function broadcastMessage(clients, message) {
     clients.forEach((client) => {
