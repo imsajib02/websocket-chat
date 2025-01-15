@@ -88,6 +88,10 @@ app.get('/chat', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'chat.html'));
 });
 
+app.get('/', (req, res) => {
+    res.status(200).send('Server is working!');
+});
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
