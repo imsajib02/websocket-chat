@@ -1,11 +1,15 @@
 const http = require('http');
 const WebSocket = require('ws');
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 
 // Create an Express app
 const app = express();
 app.use(bodyParser.json()); // Middleware to parse JSON bodies
+
+// Serve static files (optional, if you have any static assets like images, CSS, or JS)
+app.use(express.static(path.join(__dirname, 'views')));
 
 // Create an HTTP server
 const server = http.createServer(app);
@@ -77,6 +81,11 @@ app.post('/api/send-message', (req, res) => {
 
     broadcastMessage(chatClients, JSON.stringify(req.body));
     return res.status(200).json({ status: 'success', message: 'Message sent successfully!' });
+});
+
+// Serve the chat HTML page
+app.get('/chat', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'chat.html'));
 });
 
 // Start the server
