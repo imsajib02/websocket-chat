@@ -1,4 +1,5 @@
 const http = require('http');
+const WebSocket = require('ws');
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -8,6 +9,9 @@ app.use(bodyParser.json()); // Middleware to parse JSON bodies
 
 // Create an HTTP server
 const server = http.createServer(app);
+
+// Create WebSocket servers for chatting
+const chatWss = new WebSocket.Server({ noServer: true });
 
 // Start the server
 const PORT = process.env.PORT || 3000;
