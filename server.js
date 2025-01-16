@@ -37,10 +37,10 @@ chatWss.on('connection', (ws) => {
 
     // Store websocket stream
     chatClients.push(ws);
-    console.log('New client connected!');
+    // console.log('New client connected!');
 
     ws.on('message', (message) => {
-        console.log('Chat message received: ', message.toString());
+        // console.log('Chat message received: ', message.toString());
         broadcastMessage(chatClients, message.toString());
     });
 
@@ -51,7 +51,7 @@ chatWss.on('connection', (ws) => {
 
         if(index !== -1) {
             chatClients.splice(index, 1);
-            console.log('Client disconnected!');
+            // console.log('Client disconnected!');
         }
     });
 });
